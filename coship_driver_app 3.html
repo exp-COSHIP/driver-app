@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F1B3D">
+<title>COSHIP Driver App</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0F1B3D;--navy2:#1a2954;--red:#E11D2E;--red2:#B5141F;
+  --bg:#F0EFE9;--card:#FFFFFF;--bd:#DDD9CE;--bd2:#C8C4B5;
+  --t:#1A1A1A;--t2:#555;--t3:#999;
+  --air:#2A7AB8;--local:#1F7A3A;--sea:#7B4FA6;
+  --sh:0 2px 8px rgba(0,0,0,.08);--sh2:0 6px 20px rgba(0,0,0,.12)
+}
+html,body{min-height:100%;background:var(--bg)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--t);-webkit-tap-highlight-color:transparent;overscroll-behavior:none;-webkit-font-smoothing:antialiased}
+.app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+.hd{background:var(--navy);padding:14px 18px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:20;border-bottom:3px solid var(--red)}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-icon svg{width:22px;height:22px}
+.logo-txt{display:flex;flex-direction:column;line-height:1}
+.logo-main{font-size:18px;font-weight:900;color:#fff;letter-spacing:.04em}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+.hd-right{font-size:11px;color:rgba(255,255,255,.4);font-weight:600}
+
+/* BREADCRUMB */
+.bc{background:var(--navy2);padding:8px 18px;display:flex;align-items:center;gap:6px;font-size:11.5px;color:rgba(255,255,255,.55);font-weight:600;letter-spacing:.02em}
+.bc-sep{color:rgba(255,255,255,.25)}
+.bc-cur{color:rgba(255,255,255,.9)}
+
+/* BACK BTN */
+.back-btn{display:inline-flex;align-items:center;gap:5px;margin:14px 18px 2px;padding:7px 14px 7px 10px;background:var(--card);border:1px solid var(--bd2);border-radius:999px;font-size:12.5px;color:var(--t2);cursor:pointer;font-family:inherit;font-weight:700;box-shadow:var(--sh);transition:all .15s}
+.back-btn:active{transform:scale(.96)}
+.back-btn svg{width:14px;height:14px}
+
+/* CONTENT */
+.ct{flex:1;padding:18px 18px 32px}
+
+/* HOME SCREEN */
+.home-intro{text-align:center;padding:28px 0 24px}
+.home-badge{display:inline-block;background:rgba(225,29,46,.1);color:var(--red);font-size:10.5px;font-weight:800;letter-spacing:.1em;padding:4px 12px;border-radius:999px;margin-bottom:14px;text-transform:uppercase}
+.home-title{font-size:26px;font-weight:900;color:var(--navy);letter-spacing:-.025em;margin-bottom:6px}
+.home-sub{font-size:13px;color:var(--t2);line-height:1.55}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.home-card{background:var(--card);border:2px solid var(--bd);border-radius:20px;padding:26px 16px 22px;cursor:pointer;transition:all .2s;box-shadow:var(--sh);text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:12px}
+.home-card:active{transform:scale(.96)}
+.home-card.pickup:hover,.home-card.pickup:active{border-color:var(--red);background:rgba(225,29,46,.03)}
+.home-card.drop:hover,.home-card.drop:active{border-color:var(--navy);background:rgba(15,27,61,.03)}
+.hc-icon{width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.hc-icon.red{background:linear-gradient(135deg,#E11D2E,#FF4D5E)}
+.hc-icon.navy{background:linear-gradient(135deg,#0F1B3D,#2A3F7A)}
+.hc-icon svg{width:28px;height:28px;color:#fff}
+.hc-title{font-size:18px;font-weight:900;letter-spacing:-.02em}
+.hc-title.red{color:var(--red)}
+.hc-title.navy{color:var(--navy)}
+.hc-sub{font-size:11px;color:var(--t3);font-weight:600;line-height:1.45;text-align:center}
+
+/* TYPE SELECT */
+.type-grid{display:flex;flex-direction:column;gap:11px;margin-top:6px}
+.type-card{background:var(--card);border:2px solid var(--bd);border-radius:16px;padding:18px 17px;cursor:pointer;transition:all .18s;box-shadow:var(--sh);display:flex;align-items:center;gap:14px;font-family:inherit}
+.type-card:active{transform:scale(.98)}
+.type-card:hover{border-color:var(--red);box-shadow:var(--sh2)}
+.tc-icon{width:42px;height:42px;border-radius:11px;background:rgba(15,27,61,.07);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tc-icon svg{width:20px;height:20px;color:var(--navy)}
+.tc-body{flex:1}
+.tc-title{font-size:15px;font-weight:800;color:var(--navy);letter-spacing:-.015em}
+.tc-sub{font-size:11.5px;color:var(--t3);margin-top:2px;font-weight:500}
+.tc-arr{color:var(--t3)}
+.tc-arr svg{width:16px;height:16px}
+
+/* SECTION HEADER */
+.sec{margin:0 0 14px;display:flex;align-items:center;gap:9px}
+.sec-line{width:4px;height:22px;border-radius:2px;background:var(--red);flex-shrink:0}
+.sec-title{font-size:13.5px;font-weight:800;color:var(--navy);letter-spacing:.01em;text-transform:uppercase}
+.sec.mt{margin-top:26px}
+
+/* FORM CARD */
+.fc{background:var(--card);border-radius:16px;padding:18px 16px;box-shadow:var(--sh);margin-bottom:14px;border:1px solid var(--bd)}
+
+/* PICKUP TYPE TABS */
+.ptabs{display:flex;gap:0;background:var(--bg);border-radius:11px;padding:4px;border:1px solid var(--bd)}
+.ptab{flex:1;padding:9px 4px;border:none;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--t3);cursor:pointer;border-radius:8px;transition:all .18s;letter-spacing:.01em}
+.ptab.active.air{background:var(--air);color:#fff;box-shadow:0 2px 6px rgba(42,122,184,.35)}
+.ptab.active.local{background:var(--local);color:#fff;box-shadow:0 2px 6px rgba(31,122,58,.35)}
+.ptab.active.sea{background:var(--sea);color:#fff;box-shadow:0 2px 6px rgba(123,79,166,.35)}
+
+/* FIELD */
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label{display:block;font-size:12px;font-weight:800;color:var(--t2);margin-bottom:5px;letter-spacing:.02em;text-transform:uppercase}
+.field label .req{color:var(--red);margin-left:2px}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;background:var(--bg);border:1.5px solid var(--bd2);border-radius:11px;font-family:inherit;font-size:15px;color:var(--t);outline:none;transition:border-color .15s;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--red);background:#fff}
+.field input.err,.field select.err{border-color:var(--red);background:rgba(225,29,46,.03)}
+.field input::placeholder,.field textarea::placeholder{color:var(--t3)}
+.field textarea{resize:vertical;min-height:80px}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;padding-right:36px}
+.ferr{font-size:11px;color:var(--red);margin-top:3px;display:none}
+.ferr.v{display:block}
+
+/* BOX COUNT */
+.bc-ctrl{display:flex;align-items:center;gap:0;border:1.5px solid var(--bd2);border-radius:11px;overflow:hidden;background:var(--bg);width:160px}
+.bc-btn{width:46px;height:46px;border:none;background:transparent;font-size:22px;font-weight:300;color:var(--navy);cursor:pointer;font-family:inherit;transition:background .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bc-btn:active{background:var(--bd)}
+.bc-num{flex:1;text-align:center;font-size:20px;font-weight:800;color:var(--navy);line-height:46px;font-variant-numeric:tabular-nums}
+
+/* BOX CARDS */
+.box-list{display:flex;flex-direction:column;gap:11px}
+.box-card{background:var(--bg);border:1.5px solid var(--bd2);border-radius:13px;padding:13px 14px}
+.box-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.box-num{font-size:11px;font-weight:800;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+.box-badge{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(15,27,61,.08);color:var(--navy)}
+.box-badge.higher{background:var(--red);color:#fff}
+.box-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.box-row.three{grid-template-columns:1fr 1fr 1fr}
+.box-mini label{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:3px}
+.box-mini input{width:100%;padding:9px 10px;background:#fff;border:1.5px solid var(--bd2);border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;color:var(--t);outline:none;text-align:center;transition:border-color .15s}
+.box-mini input:focus{border-color:var(--red)}
+.box-result{display:flex;gap:7px;margin-top:6px}
+.box-calc{flex:1;background:#fff;border:1px solid var(--bd);border-radius:9px;padding:7px 10px;text-align:center}
+.box-calc-label{font-size:9.5px;font-weight:800;color:var(--t3);letter-spacing:.05em;text-transform:uppercase;display:block}
+.box-calc-val{font-size:16px;font-weight:900;color:var(--navy);font-variant-numeric:tabular-nums}
+.box-calc.charge .box-calc-val{color:var(--red)}
+
+/* PAYMENT */
+.pay-opts{display:flex;flex-direction:column;gap:7px}
+.pay-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--bg);border:1.5px solid var(--bd2);border-radius:11px;cursor:pointer;transition:all .15s}
+.pay-opt.selected{border-color:var(--red);background:rgba(225,29,46,.04)}
+.pay-opt input[type=radio]{display:none}
+.pay-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--bd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.pay-opt.selected .pay-dot{border-color:var(--red);background:var(--red)}
+.pay-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff;display:none}
+.pay-opt.selected .pay-dot::after{display:block}
+.pay-label{font-size:14px;font-weight:700;color:var(--t);flex:1}
+.pay-badge{font-size:10.5px;font-weight:700;color:var(--red);background:rgba(225,29,46,.1);padding:2px 7px;border-radius:999px}
+.surcharge-note{font-size:11.5px;color:#8B4A00;background:#FFF3DC;border:1px solid #F5C96B;border-radius:9px;padding:9px 12px;margin-top:8px;font-weight:600;line-height:1.5}
+
+/* PHOTO UPLOAD */
+.photo-zone{border:2px dashed var(--bd2);border-radius:13px;background:var(--bg);padding:20px;text-align:center;cursor:pointer;transition:all .18s;position:relative}
+.photo-zone:hover,.photo-zone.has-photos{border-color:var(--navy);background:rgba(15,27,61,.03)}
+.photo-zone input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.photo-zone-icon{width:44px;height:44px;background:rgba(15,27,61,.07);border-radius:12px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.photo-zone-icon svg{width:22px;height:22px;color:var(--navy)}
+.photo-zone-title{font-size:14px;font-weight:700;color:var(--navy)}
+.photo-zone-sub{font-size:11.5px;color:var(--t3);margin-top:3px}
+.photo-previews{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
+.photo-preview-item{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;background:var(--bd)}
+.photo-preview-item img{width:100%;height:100%;object-fit:cover;display:block}
+.photo-del{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,.65);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;line-height:1}
+.photo-count{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--local);font-weight:700;background:rgba(31,122,58,.1);padding:3px 9px;border-radius:999px;margin-top:8px}
+.photo-count svg{width:12px;height:12px}
+
+/* SUBMIT BTN */
+.submit-btn{width:100%;padding:16px;background:var(--red);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;transition:all .15s;box-shadow:0 4px 12px rgba(225,29,46,.3);letter-spacing:-.01em;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.submit-btn:hover{background:var(--red2)}
+.submit-btn:active{transform:scale(.98)}
+.submit-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed}
+.submit-btn svg{width:18px;height:18px}
+.loading-spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS SCREEN */
+.success-wrap{text-align:center;padding:32px 0 24px}
+.success-icon{width:72px;height:72px;background:linear-gradient(135deg,var(--local),#2AA84D);border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(31,122,58,.3)}
+.success-icon svg{width:36px;height:36px;color:#fff}
+.success-title{font-size:24px;font-weight:900;color:var(--navy);letter-spacing:-.025em;margin-bottom:8px}
+.success-msg{font-size:13.5px;color:var(--t2);line-height:1.6;margin-bottom:22px}
+.success-detail{background:var(--card);border-radius:16px;padding:16px;border:1px solid var(--bd);text-align:left;margin-bottom:22px;box-shadow:var(--sh)}
+.sd-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
+.sd-row:last-child{border-bottom:none}
+.sd-key{color:var(--t3);font-weight:600;min-width:80px}
+.sd-val{color:var(--navy);font-weight:700;flex:1}
+.new-btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:14px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:-.01em}
+.new-btn:active{transform:scale(.98)}
+
+/* SCREEN TITLE */
+.screen-title{font-size:21px;font-weight:900;color:var(--navy);letter-spacing:-.025em;margin:4px 0 3px}
+.screen-sub{font-size:12.5px;color:var(--t2);margin-bottom:18px;line-height:1.5}
+
+/* TYPE BADGE */
+.type-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.02em;margin-bottom:12px}
+.type-badge.air{background:rgba(42,122,184,.1);color:var(--air)}
+.type-badge.local{background:rgba(31,122,58,.1);color:var(--local)}
+.type-badge.sea{background:rgba(123,79,166,.1);color:var(--sea)}
+.type-badge.dropzone{background:rgba(15,27,61,.08);color:var(--navy)}
+.type-badge.drop{background:rgba(225,29,46,.08);color:var(--red)}
+
+@media(max-width:380px){.home-title{font-size:23px}.ct{padding:15px 15px 28px}.home-card{padding:22px 12px 18px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="logo-txt">
+        <span class="logo-main">COSHIP</span>
+        <span class="logo-sub">Canada Orient Shipping</span>
+      </div>
+    </div>
+    <span class="hd-right" id="hd-date"></span>
+  </header>
+  <div id="breadcrumb"></div>
+  <div id="root"></div>
+</div>
+
+<script>
+/* ── APPS SCRIPT URL ── */
+// 새 Apps Script 프로젝트에 아래 제공되는 코드를 붙여넣고 배포 후 URL을 여기에 입력하세요
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx3FjNU0rHyRT8YWbRYRusbKMScqbyj_O3GSBm5J5xueHX4pomsxh2rDbgujiC1MfFpzQ/exec';
+
+/* ── ICONS ── */
+const IC = {
+  truck: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>`,
+  box: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+  person: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  store: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  camera: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>`,
+  arrR: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
+  arrL: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>`,
+  send: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>`
+};
+
+/* ── LOCATIONS ── */
+const LOCATIONS = [
+  '캐나다쉬핑 본사 (Coquitlam)',
+  '캐나다쉬핑 택배방 (로히드 Burnaby)',
+  '우밴유 UVANU (Downtown)',
+  '밴브릿지 유학원 (Downtown)',
+  'UPS STORE (Howe St)',
+  'The Newsroom (Kerrisdale)',
+  '마켓리본 버나비 (Metrotown)',
+  '마켓리본 코퀴틀람',
+  '써리 한남마트 (Guildford)',
+  '랭리 한남마트',
+  '랭리 길포드 한의원',
+  '나르샤 키친웨어 (Richmond)',
+  'ABC ACADEMIC BOOKS (UBC)',
+  '기타 (직접 입력)'
+];
+
+/* ── STATE ── */
+let state = {
+  screen: 'home',
+  pickupType: null,
+  localType: '',
+  boxCount: 1,
+  _boxTimer: null,
+  boxes: [{w:'',l:'',h:'',weight:''}],
+  photos: [],         // [{name, base64, url}]
+  payMethod: '',
+  successData: {},
+  submitting: false
+};
+
+/* ── HELPERS ── */
+function calcVol(w,l,h){ return (parseFloat(w)||0)*(parseFloat(l)||0)*(parseFloat(h)||0)/5000; }
+function calcCharge(realW,volW){ return Math.max(parseFloat(realW)||0, volW); }
+function fmt(n){ return n?n.toFixed(1):'—'; }
+function ts(){ return new Date().toLocaleString('ko-KR',{timeZone:'America/Vancouver'}); }
+
+function dateStr(){
+  const d=new Date();
+  return d.toLocaleDateString('ko-KR',{month:'short',day:'numeric',weekday:'short'});
+}
+
+function go(screen, extra={}){
+  state = {...state, screen, ...extra};
+  render();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function sendData(payload, cb){
+  if(!SHEET_URL || SHEET_URL==='' || SHEET_URL.indexOf('script.google.com')<0){
+    setTimeout(()=>cb(true, '(테스트 모드: 실제 제출 없음)'), 800);
+    return;
+  }
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify(payload)}).then(()=>cb(true,'')).catch(()=>cb(false,'네트워크 오류가 발생했습니다.'));
+}
+
+/* ── PHOTO HANDLER ── */
+function handlePhotos(files, onUpdate){
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith('image/')) return;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      state.photos.push({name:file.name, base64:e.target.result, url:e.target.result});
+      onUpdate();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removePhoto(i){
+  state.photos.splice(i,1);
+  render();
+}
+
+/* ── RENDER ── */
+const ROOT = document.getElementById('root');
+const BC = document.getElementById('breadcrumb');
+document.getElementById('hd-date').textContent = dateStr();
+
+function renderBC(crumbs){
+  if(!crumbs || crumbs.length===0){ BC.innerHTML=''; return; }
+  BC.innerHTML=`<div class="bc">${crumbs.map((c,i)=>i<crumbs.length-1?`<span>${c}</span><span class="bc-sep">›</span>`:`<span class="bc-cur">${c}</span>`).join('')}</div>`;
+}
+
+function mkBack(label, toScreen, extra={}){
+  const b=document.createElement('button');
+  b.className='back-btn';
+  b.innerHTML=IC.arrL+'<span>'+label+'</span>';
+  b.onclick=()=>go(toScreen, extra);
+  return b;
+}
+
+/* HOME */
+function renderHome(){
+  renderBC([]);
+  ROOT.innerHTML='';
+  const ct=document.createElement('div'); ct.className='ct';
+  ct.innerHTML=`
+    <div class="home-intro">
+      <div class="home-badge">Driver App</div>
+      <div class="home-title">무엇을 기록하시나요</div>
+      <div class="home-sub">오늘의 업무를 선택해주세요</div>
+    </div>
+    <div class="home-grid">
+      <button class="home-card pickup" onclick="go('pickup_type')">
+        <div class="hc-icon red">${IC.truck}</div>
+        <div>
+          <div class="hc-title red">PICKUP</div>
+          <div class="hc-sub">개인 고객<br>드랍존 & 파트너</div>
+        </div>
+      </button>
+      <button class="home-card drop" onclick="go('drop')">
+        <div class="hc-icon navy">${IC.box}</div>
+        <div>
+          <div class="hc-title navy">DROP</div>
+          <div class="hc-sub">딜리버리 리싯<br>배송 완료 기록</div>
+        </div>
+      </button>
+    </div>`;
+  ROOT.appendChild(ct);
+}
+
+/* PICKUP TYPE */
+function renderPickupType(){
+  renderBC(['PICKUP','유형 선택']);
+  ROOT.innerHTML='';
+  ROOT.appendChild(mkBack('홈으로', 'home'));
+  const ct=document.createElement('div'); ct.className='ct';
+  ct.innerHTML=`
+    <div class="screen-title">픽업 유형 선택</div>
+    <div class="screen-sub">어떤 픽업인지 선택해주세요</div>
+    <div class="type-grid">
+      <button class="type-card" onclick="go('pickup_personal',{pickupType:null,boxCount:1,boxes:[{w:'',l:'',h:'',weight:''}],photos:[],payMethod:''})">
+        <div class="tc-icon">${IC.person}</div>
+        <div class="tc-body">
+          <div class="tc-title">개인 고객</div>
+          <div class="tc-sub">항공 · 로컬 · 선박 / 결제 입력</div>
+        </div>
+        <div class="tc-arr">${IC.arrR}</div>
+      </button>
+      <button class="type-card" onclick="go('pickup_dropzone',{photos:[],pickupType:null})">
+        <div class="tc-icon">${IC.store}</div>
+        <div class="tc-body">
+          <div class="tc-title">드랍존 & 파트너</div>
+          <div class="tc-sub">접수처 · 파트너 픽업</div>
+        </div>
+        <div class="tc-arr">${IC.arrR}</div>
+      </button>
+    </div>`;
+  ROOT.appendChild(ct);
+}
+
+/* PICKUP PERSONAL FORM */
+function renderPickupPersonal(){
+  renderBC(['PICKUP','개인 고객']);
+  ROOT.innerHTML='';
+  ROOT.appendChild(mkBack('유형 선택', 'pickup_type'));
+  const ct=document.createElement('div'); ct.className='ct';
+
+  // Pickup type badge
+  const ptMap={air:'항공',local:'로컬',sea:'선박'};
+  const ptColor=state.pickupType||'air';
+  const bdg=state.pickupType?`<div class="type-badge ${ptColor}">${ptMap[ptColor]}</div>`:`<div class="type-badge air">유형 선택 필요</div>`;
+
+  ct.innerHTML=`
+    ${bdg}
+    <div class="screen-title">개인 고객 픽업</div>
+    <div class="screen-sub">모든 필수 항목을 입력해주세요</div>
+
+    <div class="sec"><div class="sec-line"></div><div class="sec-title">픽업 타입</div></div>
+    <div class="fc">
+      <div class="ptabs">
+        <button class="ptab ${state.pickupType==='air'?'active air':''}" onclick="setPickupType('air')">✈ 항공</button>
+        <button class="ptab ${state.pickupType==='local'?'active local':''}" onclick="setPickupType('local')">🚚 로컬</button>
+        <button class="ptab ${state.pickupType==='sea'?'active sea':''}" onclick="setPickupType('sea')">⚓ 선박</button>
+      </div>
+      ${state.pickupType==='local'?`
+      <div class="field" style="margin-top:12px;margin-bottom:0">
+        <label>로컬 종류</label>
+        <select id="pp_local_type" onchange="state.localType=this.value">
+          <option value="">-- 선택하세요 --</option>
+          <option value="캐나다포스트" ${state.localType==='캐나다포스트'?'selected':''}>캐나다포스트</option>
+          <option value="UPS" ${state.localType==='UPS'?'selected':''}>UPS</option>
+          <option value="TRUCKING" ${state.localType==='TRUCKING'?'selected':''}>TRUCKING</option>
+          <option value="기타(미정)" ${state.localType==='기타(미정)'?'selected':''}>기타 (미정)</option>
+        </select>
+      </div>`:''}
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">고객 정보</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>고객명 <span class="req">*</span></label>
+        <input type="text" id="pp_name" placeholder="예: 김철수" autocomplete="off">
+        <div class="ferr" id="pp_name_err">고객명을 입력해주세요</div>
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">박스 정보</div></div>
+    <div class="fc">
+      <div class="field" style="margin-bottom:0">
+        <label>박스 개수 <span class="req">*</span></label>
+        <div class="bc-ctrl">
+          <button class="bc-btn" onclick="changeBoxCount(-1)">−</button>
+          <div class="bc-num" id="pp_box_num">${state.boxCount}</div>
+          <button class="bc-btn" onclick="changeBoxCount(1)">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="box-list" id="pp_boxes">${renderBoxCards()}</div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">결제 정보</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>결제 금액 (CAD) <span class="req">*</span></label>
+        <input type="number" id="pp_amount" placeholder="0.00" min="0" step="0.01" oninput="updateSurcharge()">
+        <div class="ferr" id="pp_amount_err">결제 금액을 입력해주세요</div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>결제 방식 <span class="req">*</span></label>
+        <div class="pay-opts" id="pp_pay_opts">${renderPayOpts()}</div>
+        <div id="pp_surcharge" style="display:none"></div>
+        <div class="ferr" id="pp_pay_err">결제 방식을 선택해주세요</div>
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">담당자 & 사진</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>담당자 <span class="req">*</span></label>
+        <input type="text" id="pp_driver" placeholder="이름 입력" autocomplete="off">
+        <div class="ferr" id="pp_driver_err">담당자 이름을 입력해주세요</div>
+      </div>
+      <div class="field">
+        <label>픽업 / 계약서 사진</label>
+        <div class="photo-zone ${state.photos.length?'has-photos':''}" id="pp_photo_zone" onclick="document.getElementById('pp_photo_input').click()">
+          <input type="file" id="pp_photo_input" accept="image/*" multiple style="display:none" onchange="handlePhotoInput(this)">
+          ${renderPhotoZone()}
+        </div>
+      </div>
+      <div class="field">
+        <label>이메일 (선택)</label>
+        <input type="email" id="pp_email" placeholder="customer@email.com">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>리마크 (선택)</label>
+        <textarea id="pp_remark" placeholder="특이사항을 입력해주세요"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="pp_submit" onclick="submitPersonal()">
+      ${IC.send}<span>픽업 기록 제출</span>
+    </button>`;
+
+  ROOT.appendChild(ct);
+
+  // Restore values
+  setTimeout(()=>{
+    ['pp_name','pp_amount','pp_driver','pp_email','pp_remark'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el && state['_'+id]) el.value=state['_'+id];
+    });
+  },0);
+}
+
+function setPickupType(t){
+  state.pickupType=t;
+  if(t!=='local') state.localType='';
+  renderPickupPersonal();
+}
+
+function changeBoxCount(d){
+  const newCount = Math.max(1, Math.min(20, state.boxCount+d));
+  if(newCount===state.boxCount) return;
+  state.boxCount=newCount;
+  while(state.boxes.length<state.boxCount) state.boxes.push({w:'',l:'',h:'',weight:''});
+  while(state.boxes.length>state.boxCount) state.boxes.pop();
+  document.getElementById('pp_box_num').textContent=state.boxCount;
+  document.getElementById('pp_boxes').innerHTML=renderBoxCards();
+}
+
+function renderBoxCards(){
+  return state.boxes.map((b,i)=>{
+    const vol=calcVol(b.w,b.l,b.h);
+    const charge=calcCharge(b.weight,vol);
+    return `<div class="box-card">
+      <div class="box-card-hd">
+        <div class="box-num">BOX ${i+1}</div>
+        <div class="box-badge${charge>0?' higher':''}" id="box_badge_${i}">${charge>0?'청구 '+fmt(charge)+' kg':'입력 대기'}</div>
+      </div>
+      <div class="box-row">
+        <div class="box-mini"><label>실무게 (kg)</label><input type="text" inputmode="decimal" id="box_${i}_weight" value="${b.weight}" placeholder="0.0" oninput="updateBox(${i},'weight',this.value)"></div>
+        <div class="box-mini"></div>
+      </div>
+      <div class="box-row three">
+        <div class="box-mini"><label>가로 (cm)</label><input type="text" inputmode="decimal" id="box_${i}_w" value="${b.w}" placeholder="0" oninput="updateBox(${i},'w',this.value)"></div>
+        <div class="box-mini"><label>세로 (cm)</label><input type="text" inputmode="decimal" id="box_${i}_l" value="${b.l}" placeholder="0" oninput="updateBox(${i},'l',this.value)"></div>
+        <div class="box-mini"><label>높이 (cm)</label><input type="text" inputmode="decimal" id="box_${i}_h" value="${b.h}" placeholder="0" oninput="updateBox(${i},'h',this.value)"></div>
+      </div>
+      <div class="box-result">
+        <div class="box-calc"><span class="box-calc-label">부피무게</span><span class="box-calc-val" id="box_vol_${i}">${vol>0?fmt(vol)+' kg':'—'}</span></div>
+        <div class="box-calc charge"><span class="box-calc-label">청구무게</span><span class="box-calc-val" id="box_chrg_${i}">${charge>0?fmt(charge)+' kg':'—'}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateBox(i,key,val){
+  state.boxes[i][key]=val;
+  // 입력 필드 재렌더링 없이 결과값만 업데이트 (포커스 유지)
+  clearTimeout(state._boxTimer);
+  state._boxTimer=setTimeout(()=>{
+    const b=state.boxes[i];
+    const vol=calcVol(b.w,b.l,b.h);
+    const charge=calcCharge(b.weight,vol);
+    const volEl=document.getElementById('box_vol_'+i);
+    const chrgEl=document.getElementById('box_chrg_'+i);
+    const badgeEl=document.getElementById('box_badge_'+i);
+    if(volEl) volEl.textContent=vol>0?fmt(vol)+' kg':'—';
+    if(chrgEl) chrgEl.textContent=charge>0?fmt(charge)+' kg':'—';
+    if(badgeEl){ badgeEl.textContent=charge>0?'청구 '+fmt(charge)+' kg':'입력 대기'; badgeEl.className='box-badge'+(charge>0?' higher':''); }
+  },250);
+}
+
+const PAY_OPTS=[
+  {id:'debit',label:'데빗 카드',badge:''},
+  {id:'credit',label:'크레딧 카드',badge:'+ 3%'},
+  {id:'etransfer',label:'E-Transfer',badge:''},
+  {id:'cash',label:'현금',badge:''},
+  {id:'pending',label:'결제 안내 요망',badge:''}
+];
+
+function renderPayOpts(){
+  return PAY_OPTS.map(o=>`
+    <label class="pay-opt ${state.payMethod===o.id?'selected':''}" onclick="selectPay('${o.id}')">
+      <div class="pay-dot"></div>
+      <span class="pay-label">${o.label}</span>
+      ${o.badge?`<span class="pay-badge">${o.badge}</span>`:''}
+    </label>`).join('');
+}
+
+function selectPay(id){
+  state.payMethod=id;
+  document.getElementById('pp_pay_opts').innerHTML=renderPayOpts();
+  updateSurcharge();
+}
+
+function updateSurcharge(){
+  const el=document.getElementById('pp_surcharge'); if(!el) return;
+  const amount=parseFloat(document.getElementById('pp_amount')?.value)||0;
+  if(state.payMethod==='credit'&&amount>0){
+    const total=(amount*1.03).toFixed(2);
+    el.style.display='block';
+    if(amount>=100){
+      el.innerHTML=`<div class="surcharge-note">$100 이상 크레딧 3% 수수료 적용 → 청구 금액: <strong>$${total}</strong></div>`;
+    } else {
+      el.innerHTML=`<div class="surcharge-note">$100 미만 크레딧 수수료 없음 → 청구 금액: <strong>$${amount.toFixed(2)}</strong></div>`;
+    }
+  } else {
+    el.style.display='none';
+  }
+}
+
+function renderPhotoZone(){
+  if(state.photos.length===0){
+    return `<div class="photo-zone-icon">${IC.camera}</div>
+      <div class="photo-zone-title">사진 추가</div>
+      <div class="photo-zone-sub">탭하여 카메라 또는 갤러리 선택</div>`;
+  }
+  const previews=state.photos.map((p,i)=>
+    `<div class="photo-preview-item"><img src="${p.url}"><button class="photo-del" onclick="event.stopPropagation();removePhoto(${i})">×</button></div>`
+  ).join('');
+  return `<div class="photo-previews">${previews}</div>
+    <div class="photo-count">${IC.check}<span>${state.photos.length}장 선택됨</span></div>`;
+}
+
+function handlePhotoInput(input){
+  handlePhotos(input.files, ()=>{
+    const zone=document.getElementById('pp_photo_zone');
+    if(zone){ zone.innerHTML=renderPhotoZone(); zone.classList.add('has-photos'); }
+    const zone2=document.getElementById('dz_photo_zone');
+    if(zone2){ zone2.innerHTML=renderPhotoZone(); zone2.classList.add('has-photos'); }
+    const zone3=document.getElementById('dp_photo_zone');
+    if(zone3){ zone3.innerHTML=renderPhotoZone(); zone3.classList.add('has-photos'); }
+  });
+}
+
+function removePhoto(i){
+  state.photos.splice(i,1);
+  const zone=document.getElementById('pp_photo_zone')||document.getElementById('dz_photo_zone')||document.getElementById('dp_photo_zone');
+  if(zone){ zone.innerHTML=renderPhotoZone(); if(!state.photos.length) zone.classList.remove('has-photos'); }
+}
+
+function validateAndGet(fields){
+  let ok=true;
+  const vals={};
+  fields.forEach(f=>{
+    const el=document.getElementById(f.id);
+    const err=document.getElementById(f.id+'_err');
+    if(err) err.classList.remove('v');
+    if(el){ vals[f.key]=el.value.trim(); if(f.req&&!el.value.trim()){ if(err) err.classList.add('v'); ok=false; }}
+  });
+  return ok?vals:null;
+}
+
+function submitPersonal(){
+  if(state.submitting) return;
+  if(!state.pickupType){ alert('픽업 타입을 선택해주세요 (항공 / 로컬 / 선박)'); return; }
+  const vals=validateAndGet([
+    {id:'pp_name',key:'고객명',req:true},
+    {id:'pp_amount',key:'결제금액',req:true},
+    {id:'pp_driver',key:'담당자',req:true},
+    {id:'pp_email',key:'이메일',req:false},
+    {id:'pp_remark',key:'리마크',req:false}
+  ]);
+  if(!vals) return;
+  if(!state.payMethod){ document.getElementById('pp_pay_err').classList.add('v'); return; }
+
+  const ptMap={air:'항공',local:'로컬',sea:'선박'};
+  const amount=parseFloat(document.getElementById('pp_amount').value)||0;
+  const finalAmt=state.payMethod==='credit'&&amount>=100?(amount*1.03).toFixed(2):amount.toFixed(2);
+
+  const boxSummary=state.boxes.map((b,i)=>{
+    const vol=calcVol(b.w,b.l,b.h);
+    const charge=calcCharge(b.weight,vol);
+    return `Box${i+1}: 실${b.weight||0}kg 부피${fmt(vol)}kg 청구${fmt(charge)}kg`;
+  }).join(' | ');
+
+  const payload={
+    timestamp:ts(), type:'PICKUP_PERSONAL', 픽업타입:ptMap[state.pickupType],
+    로컬타입:state.pickupType==='local'?state.localType:'',
+    고객명:vals['고객명'], 박스개수:state.boxCount, 박스상세:boxSummary,
+    결제금액:finalAmt, 결제방식:state.payMethod, 담당자:vals['담당자'],
+    이메일:vals['이메일'], 리마크:vals['리마크'],
+    사진수:state.photos.length,
+    사진목록:state.photos.map(p=>p.name).join(','),
+    photos:state.photos.map(p=>p.base64)
+  };
+
+  state.submitting=true;
+  const btn=document.getElementById('pp_submit');
+  btn.disabled=true;
+  btn.innerHTML='<div class="loading-spinner"></div><span>제출 중...</span>';
+
+  sendData(payload,(ok,msg)=>{
+    state.submitting=false;
+    if(ok){
+      state.successData={
+        type:'PICKUP - 개인 고객', 타입:ptMap[state.pickupType],
+        고객명:vals['고객명'], 박스개수:state.boxCount+'개',
+        결제:'$'+finalAmt+' ('+state.payMethod+')', 담당자:vals['담당자']
+      };
+      go('success');
+    } else {
+      btn.disabled=false; btn.innerHTML=IC.send+'<span>픽업 기록 제출</span>';
+      alert(msg||'제출 실패. 다시 시도해주세요.');
+    }
+  });
+}
+
+/* DROPZONE FORM */
+function renderPickupDropzone(){
+  renderBC(['PICKUP','드랍존 & 파트너']);
+  ROOT.innerHTML='';
+  ROOT.appendChild(mkBack('유형 선택','pickup_type'));
+  const ct=document.createElement('div'); ct.className='ct';
+
+  const locOpts=LOCATIONS.map((l,i)=>`<option value="${l}">${l}</option>`).join('');
+
+  ct.innerHTML=`
+    <div class="type-badge dropzone">드랍존 & 파트너</div>
+    <div class="screen-title">드랍존 픽업</div>
+    <div class="screen-sub">접수처 또는 파트너 픽업 기록</div>
+
+    <div class="sec"><div class="sec-line"></div><div class="sec-title">픽업 장소</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>접수처 선택</label>
+        <select id="dz_location">
+          <option value="">-- 접수처를 선택하세요 --</option>
+          ${locOpts}
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>벤더 (Vendor)</label>
+        <input type="text" id="dz_vendor" placeholder="벤더명 직접 입력 (해당 시)">
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">화물 정보</div></div>
+    <div class="fc">
+      <div class="field" style="margin-bottom:0">
+        <label>화물 개수</label>
+        <input type="text" inputmode="numeric" id="dz_boxes" placeholder="1" style="width:120px">
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">수금 내역</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>수금 금액 (CAD)</label>
+        <input type="text" inputmode="decimal" id="dz_amount" placeholder="0.00">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>수금 내역</label>
+        <textarea id="dz_collection" placeholder="예: 25불 이트랜스퍼 수금 완료"></textarea>
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">담당자 & 사진</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>담당자</label>
+        <input type="text" id="dz_driver" placeholder="이름 입력" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>픽업 / 계약서 사진</label>
+        <div class="photo-zone ${state.photos.length?'has-photos':''}" id="dz_photo_zone" onclick="document.getElementById('dz_photo_input').click()">
+          <input type="file" id="dz_photo_input" accept="image/*" multiple style="display:none" onchange="handlePhotoInput(this)">
+          ${renderPhotoZone()}
+        </div>
+      </div>
+      <div class="field">
+        <label>이메일 (선택)</label>
+        <input type="email" id="dz_email" placeholder="customer@email.com">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>리마크 (선택)</label>
+        <textarea id="dz_remark" placeholder="특이사항을 입력해주세요"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="dz_submit" onclick="submitDropzone()">
+      ${IC.send}<span>픽업 기록 제출</span>
+    </button>`;
+
+  ROOT.appendChild(ct);
+}
+
+function submitDropzone(){
+  if(state.submitting) return;
+  const vals=validateAndGet([
+    {id:'dz_location',key:'접수처',req:false},
+    {id:'dz_vendor',key:'벤더',req:false},
+    {id:'dz_boxes',key:'박스개수',req:false},
+    {id:'dz_amount',key:'수금금액',req:false},
+    {id:'dz_collection',key:'수금내역',req:false},
+    {id:'dz_driver',key:'담당자',req:false},
+    {id:'dz_email',key:'이메일',req:false},
+    {id:'dz_remark',key:'리마크',req:false}
+  ]);
+  if(!vals) return;
+
+  const payload={
+    timestamp:ts(), type:'PICKUP_DROPZONE',
+    접수처:vals['접수처'], 벤더:vals['벤더'],
+    박스개수:vals['박스개수'],
+    수금금액:vals['수금금액'], 수금내역:vals['수금내역'],
+    담당자:vals['담당자'], 이메일:vals['이메일'], 리마크:vals['리마크'],
+    사진수:state.photos.length,
+    사진목록:state.photos.map(p=>p.name).join(','),
+    photos:state.photos.map(p=>p.base64)
+  };
+
+  state.submitting=true;
+  const btn=document.getElementById('dz_submit');
+  btn.disabled=true; btn.innerHTML='<div class="loading-spinner"></div><span>제출 중...</span>';
+
+  sendData(payload,(ok,msg)=>{
+    state.submitting=false;
+    if(ok){
+      state.successData={
+        type:'PICKUP - 드랍존 & 파트너', 접수처:vals['접수처'],
+        벤더:vals['벤더']||'—', 고객명:vals['고객명'],
+        박스개수:vals['박스개수']+'개', 담당자:vals['담당자']
+      };
+      go('success');
+    } else {
+      btn.disabled=false; btn.innerHTML=IC.send+'<span>픽업 기록 제출</span>';
+      alert(msg||'제출 실패. 다시 시도해주세요.');
+    }
+  });
+}
+
+/* DROP / DELIVERY RECEIPT */
+function renderDrop(){
+  renderBC(['DROP','딜리버리 리싯']);
+  ROOT.innerHTML='';
+  ROOT.appendChild(mkBack('홈으로','home'));
+  const ct=document.createElement('div'); ct.className='ct';
+
+  ct.innerHTML=`
+    <div class="type-badge drop">DELIVERY RECEIPT</div>
+    <div class="screen-title">배송 완료 기록</div>
+    <div class="screen-sub">수취인에게 배송 완료 후 기록해주세요</div>
+
+    <div class="sec"><div class="sec-line"></div><div class="sec-title">배송 정보</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>고객명 <span class="req">*</span></label>
+        <input type="text" id="dp_name" placeholder="예: 홍길동" autocomplete="off">
+        <div class="ferr" id="dp_name_err">고객명을 입력해주세요</div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>박스 개수 <span class="req">*</span></label>
+        <input type="number" id="dp_boxes" min="1" max="50" placeholder="1" style="width:120px">
+        <div class="ferr" id="dp_boxes_err">박스 개수를 입력해주세요</div>
+      </div>
+    </div>
+
+    <div class="sec mt"><div class="sec-line"></div><div class="sec-title">담당자 & 배송 증빙</div></div>
+    <div class="fc">
+      <div class="field">
+        <label>담당자 <span class="req">*</span></label>
+        <input type="text" id="dp_driver" placeholder="이름 입력" autocomplete="off">
+        <div class="ferr" id="dp_driver_err">담당자 이름을 입력해주세요</div>
+      </div>
+      <div class="field">
+        <label>배송 완료 사진</label>
+        <div class="photo-zone ${state.photos.length?'has-photos':''}" id="dp_photo_zone" onclick="document.getElementById('dp_photo_input').click()">
+          <input type="file" id="dp_photo_input" accept="image/*" multiple style="display:none" onchange="handlePhotoInput(this)">
+          ${renderPhotoZone()}
+        </div>
+      </div>
+      <div class="field">
+        <label>이메일 (선택)</label>
+        <input type="email" id="dp_email" placeholder="customer@email.com">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>리마크 (선택)</label>
+        <textarea id="dp_remark" placeholder="특이사항을 입력해주세요"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="dp_submit" onclick="submitDrop()">
+      ${IC.send}<span>배송 완료 기록 제출</span>
+    </button>`;
+
+  ROOT.appendChild(ct);
+}
+
+function submitDrop(){
+  if(state.submitting) return;
+  const vals=validateAndGet([
+    {id:'dp_name',key:'고객명',req:true},
+    {id:'dp_boxes',key:'박스개수',req:true},
+    {id:'dp_driver',key:'담당자',req:true},
+    {id:'dp_email',key:'이메일',req:false},
+    {id:'dp_remark',key:'리마크',req:false}
+  ]);
+  if(!vals) return;
+
+  const payload={
+    timestamp:ts(), type:'DROP_DELIVERY',
+    고객명:vals['고객명'], 박스개수:vals['박스개수'],
+    담당자:vals['담당자'], 이메일:vals['이메일'], 리마크:vals['리마크'],
+    사진수:state.photos.length,
+    사진목록:state.photos.map(p=>p.name).join(','),
+    photos:state.photos.map(p=>p.base64)
+  };
+
+  state.submitting=true;
+  const btn=document.getElementById('dp_submit');
+  btn.disabled=true; btn.innerHTML='<div class="loading-spinner"></div><span>제출 중...</span>';
+
+  sendData(payload,(ok,msg)=>{
+    state.submitting=false;
+    if(ok){
+      state.successData={
+        type:'DROP - 배송 완료', 고객명:vals['고객명'],
+        박스개수:vals['박스개수']+'개', 담당자:vals['담당자']
+      };
+      go('success');
+    } else {
+      btn.disabled=false; btn.innerHTML=IC.send+'<span>배송 완료 기록 제출</span>';
+      alert(msg||'제출 실패. 다시 시도해주세요.');
+    }
+  });
+}
+
+/* SUCCESS */
+function renderSuccess(){
+  renderBC(['완료']);
+  ROOT.innerHTML='';
+  const ct=document.createElement('div'); ct.className='ct';
+  const rows=Object.entries(state.successData).map(([k,v])=>
+    `<div class="sd-row"><div class="sd-key">${k}</div><div class="sd-val">${v}</div></div>`
+  ).join('');
+  ct.innerHTML=`
+    <div class="success-wrap">
+      <div class="success-icon">${IC.check}</div>
+      <div class="success-title">제출 완료</div>
+      <div class="success-msg">기록이 성공적으로 저장되었습니다.<br>담당자에게 알림이 발송됩니다.</div>
+    </div>
+    <div class="success-detail">${rows}</div>
+    <button class="new-btn" onclick="resetAndHome()">새 기록 시작</button>`;
+  ROOT.appendChild(ct);
+}
+
+function resetAndHome(){
+  state={screen:'home',pickupType:null,localType:'',boxCount:1,_boxTimer:null,boxes:[{w:'',l:'',h:'',weight:''}],photos:[],payMethod:'',successData:{},submitting:false};
+  go('home');
+}
+
+/* MAIN RENDER */
+function render(){
+  ROOT.innerHTML='';
+  const sc=state.screen;
+  if(sc==='home') renderHome();
+  else if(sc==='pickup_type') renderPickupType();
+  else if(sc==='pickup_personal') renderPickupPersonal();
+  else if(sc==='pickup_dropzone') renderPickupDropzone();
+  else if(sc==='drop') renderDrop();
+  else if(sc==='success') renderSuccess();
+}
+
+render();
+</script>
+</body>
+</html>
